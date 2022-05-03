@@ -6,6 +6,7 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { AppService } from './app.service';
+import { IInvoice, ILoan, IOrder, IProduct } from './interfaces';
 
 @Controller()
 export class AppController {
@@ -31,4 +32,28 @@ export class AppController {
   public async getProductById(@Payload() data: any, @Ctx() context: RmqContext) {
     return await this.appService.getProductById(data);
   }
+
+  @MessagePattern({ cmd: 'get_all_products' })
+  public async getAllProducts(@Payload() data: any, @Ctx() context: RmqContext): Promise<IProduct[]> {
+    return await this.appService.getAllProducts(data);
+  }
+
+  @MessagePattern({ cmd: 'get_all_orders' })
+  public async getAllOrders(): Promise<IOrder[]> {
+    return await this.appService.getAllOrders();
+  }
+ 
+
+  @MessagePattern({ cmd: 'get_all_loans' })
+  public async getAllLoans(): Promise<ILoan[]> {
+    return await this.appService.getAllLoans();
+  }
+ 
+ 
+  @MessagePattern({ cmd: 'get_all_invoices' })
+  public async getAllInvoices(): Promise<IInvoice[]> {
+    return await this.appService.getAllInvoices();
+  }
+ 
+
 }

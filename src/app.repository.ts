@@ -46,15 +46,18 @@ export class AppRepository {
     }
   }
 
-  public async updateProductInventory(id:string): Promise<IProduct> {
+  public async updateProductInventory(id: string): Promise<IProduct> {
     try {
-      return await this.productModel.findByIdAndUpdate({_id:id},{inventory:{$inc:-1}},{new:true});
+      return await this.productModel.findByIdAndUpdate(
+        { _id: id },
+        { inventory: { $inc: -1 } },
+        { new: true },
+      );
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
   }
 
-  
   public async createOrder(order: IOrder): Promise<IOrder> {
     try {
       return await this.orderModel.create(order);
@@ -92,7 +95,7 @@ export class AppRepository {
       return await this.categoryModel
         .findOne()
         .where({
-          _id:id
+          _id: id,
         })
         .lean();
     } catch (e) {
@@ -146,16 +149,15 @@ export class AppRepository {
   public async findProductById(id: string): Promise<IProduct> {
     try {
       return await this.productModel
-        .findById({_id:id})
+        .findById({ _id: id })
         .where({
           isDeleted: false,
         })
-        .lean()
+        .lean();
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
   }
-  
 
   public async findAllLoans(id: string): Promise<ILoan[]> {
     try {
@@ -172,12 +174,11 @@ export class AppRepository {
     }
   }
 
-  public async findAllInvoices(id: string): Promise<IInvoice[]> {
+  public async findAllInvoices(): Promise<IInvoice[]> {
     try {
       return await this.productModel
         .find()
         .where({
-          payer: id,
           isDeleted: false,
         })
         .lean()
@@ -189,12 +190,109 @@ export class AppRepository {
     }
   }
 
-  //         $or: [
-  //           { fullName: { $regex: search, $options: 'i' } },
-  //           { phone: { $regex: search, $options: 'i' } },
-  //           { email: { $regex: search, $options: 'i' } },
-  //           { merchantType: { $regex: search, $options: 'i' } },
-  //           { ownerName: { $regex: search, $options: 'i' } },
-  //           { address: { $regex: search, $options: 'i' } },
-  //         ],
+  public async getAllProducts(
+    limit: number,
+    page: number,
+    search: string,
+    sortBy: string,
+    sortType: number,
+  ): Promise<IProduct[]> {
+    try {
+      return await this.productModel
+        .find()
+        .where({
+          $or: [{ name: { $regex: search, $options: 'i' } }],
+          isDeleted: false,
+          inventory: { $gte: 5 },
+        })
+        .lean()
+        .populate([
+          {
+            path: 'category',
+            select: 'name',
+          },
+          {
+            path: 'merchant',
+            select: 'ownerName fullName merchantType',
+          },
+        ])
+        .limit(limit)
+        .skip(limit * page)
+        .sort({
+          [sortBy]: sortType,
+        });
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async getAllOrders(): Promise<IOrder[]> {
+    try {
+      return await this.orderModel
+        .find()
+        .where({
+          isDeleted: false,
+        })
+        .lean()
+        .populate([
+          {
+            path: 'product',
+            select: 'name price category',
+            populate:{
+              path:'category',
+              select:'name'
+            }
+          },
+          
+          {
+            path: 'buyer',
+            select: 'fullName',
+          },
+
+          {
+            path: 'seller',
+            select: 'ownerName fullName merchantType',
+          },
+        ])
+        .sort({
+          createdAt:-1
+        });
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async getAllLoans(): Promise<ILoan[]> {
+    try {
+      return await this.loanModel
+        .find()
+        .where({
+          isDeleted: false,
+        })
+        .lean()
+        .sort({
+          createdAt:-1
+        });
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async getAllInvoices(): Promise<ILoan[]> {
+    try {
+      return await this.invoiceModel
+        .find()
+        .where({
+          isDeleted: false,
+        })
+        .lean()
+        .sort({
+          createdAt:-1
+        });
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  
 }

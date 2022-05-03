@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppRepository } from './app.repository';
 import { AppService } from './app.service';
-import { Categories, CategorySchema, Invoices, InvoiceSchema, Loans, LoanSchema, Orders, OrderSchema, Products, ProductSchema } from './schemas';
+import { Categories, CategorySchema, Invoices, InvoiceSchema, Loans, LoanSchema, Orders, OrderSchema, Products, ProductSchema, Users, UserSchema } from './schemas';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { Categories, CategorySchema, Invoices, InvoiceSchema, Loans, LoanSchema,
       { name: Orders.name, schema: OrderSchema },
       { name: Invoices.name, schema: InvoiceSchema },
       { name: Categories.name, schema: CategorySchema },
+      { name: Users.name, schema: UserSchema },
     ]),
     ClientsModule.register([
       {

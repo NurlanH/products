@@ -181,7 +181,31 @@ export class AppService {
     return await this.appRepository.updateProductInventory(id);
   }
 
-  public async getProductById(productId: string): Promise<IInvoice> {
+  public async getProductById(productId: string): Promise<IProduct> {
     return await this.appRepository.findProductById(productId);
   }
+
+  public async getAllProducts(data:any): Promise<IProduct[]> {
+    const limit = data.limit ? Number(data.limit) : 10;
+    const page = data.page ? Number(data.page) : 0;
+    const search = data.search ? (data.search).toLowerCase() : '';
+    const sortBy = data.sortBy ? data.sortBy : 'createdAt'
+    const sortType= data.sortType && data.sortType == 'asc' ? 1 : -1 
+   
+    return await this.appRepository.getAllProducts( limit, page, search, sortBy, sortType);
+  }  
+
+
+  public async getAllOrders(): Promise<IOrder[]> {
+    return await this.appRepository.getAllOrders();
+  }
+
+  public async getAllLoans(): Promise<ILoan[]> {
+    return await this.appRepository.getAllLoans();
+  }
+
+  public async getAllInvoices(): Promise<IInvoice[]> {
+    return await this.appRepository.getAllInvoices();
+  }
+  
 }
