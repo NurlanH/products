@@ -46,6 +46,15 @@ export class AppRepository {
     }
   }
 
+  public async updateProductInventory(id:string): Promise<IProduct> {
+    try {
+      return await this.productModel.findByIdAndUpdate({_id:id},{inventory:{$inc:-1}},{new:true});
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  
   public async createOrder(order: IOrder): Promise<IOrder> {
     try {
       return await this.orderModel.create(order);
@@ -133,6 +142,20 @@ export class AppRepository {
       throw new InternalServerErrorException(e);
     }
   }
+
+  public async findProductById(id: string): Promise<IProduct> {
+    try {
+      return await this.productModel
+        .findById({_id:id})
+        .where({
+          isDeleted: false,
+        })
+        .lean()
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+  
 
   public async findAllLoans(id: string): Promise<ILoan[]> {
     try {

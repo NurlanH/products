@@ -23,16 +23,12 @@ export class AppController {
 
   @MessagePattern({ cmd: 'create_order' })
   public async createOrder(@Payload() data: any, @Ctx() context: RmqContext) {
-    return await this.appService.createOrder();
+    return await this.appService.createOrder(data);
   }
 
-  @MessagePattern({ cmd: 'create_loan' })
-  public async createLoan(@Payload() data: any, @Ctx() context: RmqContext) {
-    return await this.appService.createLoan();
-  }
-
-  @MessagePattern({ cmd: 'create_invoice' })
-  public async createInvoice(@Payload() data: any, @Ctx() context: RmqContext) {
-    return await this.appService.createInvoice();
+ 
+  @MessagePattern({ cmd: 'get_product_by_id' })
+  public async getProductById(@Payload() data: any, @Ctx() context: RmqContext) {
+    return await this.appService.getProductById(data);
   }
 }

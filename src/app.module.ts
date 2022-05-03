@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppRepository } from './app.repository';
@@ -24,6 +25,19 @@ import { Categories, CategorySchema, Invoices, InvoiceSchema, Loans, LoanSchema,
       { name: Orders.name, schema: OrderSchema },
       { name: Invoices.name, schema: InvoiceSchema },
       { name: Categories.name, schema: CategorySchema },
+    ]),
+    ClientsModule.register([
+      {
+        name: 'USERS_CONTROL',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'authentication',
+          queueOptions: {
+            durable: true
+          },
+        },
+      }
     ]),
   ],
   controllers: [AppController],
